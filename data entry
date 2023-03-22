@@ -1,0 +1,77 @@
+use project;
+INSERT INTO Physician (physicianID, name, position, ssn)
+VALUES	(1, "Abdi Brady", 'Intern', 58978956),
+		(2, "Brian Kaino", "Senior", 23456789),
+		(3, "Leah Clark", "Psychiatrist", 34567891),
+		(4, "Abigael kemboi", "Resident", 34567891),
+        (5, "Micah Too", "Senior",12345678 );
+     
+INSERT INTO Department (deptID, name, headID)
+VALUES	(100, "Surgery", 1),
+		(101, "General Medicine", 2),
+		(102, "Psychiatry", 3),
+        (103, "Psychiatry", 4);
+
+INSERT INTO affiliatedWith (physicianID, departmentID)
+VALUES	(1, 100),
+		(2, 101),
+        (3, 102),
+        (4, 103);
+        
+INSERT INTO `procedure` (procID, name, cost)
+VALUES	(500, "Proc A", 1500.0),
+		(501, "Proc B", 2000.0),
+        (502, "Proc C", 2500.0),
+        (503, "Proc D", 500.0);
+        
+INSERT INTO Patient(patientID, ssn, name, address,dob, phone, insuranceNumber, primaryphysicianID)
+VALUES	(2000, 123456, "Alfred John", "120 E Ave", "1995-02-03", "575-123-2345", 123454, 1),
+		(2001, 234567, "Angela King", "123 W Ave", "1985-03-04", "575-124-2564", 256484, 2),
+		(2002, 345678, "Jackson Clark", "124 N Ave", "1990-04-10", "575-253-5689", 125465, 3),
+		(2003, 456789, "Jason Drake", "200 E Jackson St", "1998-05-06", "575-256-8965", 257898, 4);
+
+INSERT INTO Nurse(nurseID, name, position, ssn)
+VALUES	(1000, "Abbie Jerop", "Head Nurse", 1110),
+		(1001, "Collins Kirwa", "Nurse", 1111),
+		(1002, "Lex Ambani", "Nurse", 1112),
+		(1003, "Cleah Kimutai", "Nurse", 1113);
+
+INSERT INTO Medication (medID, name)
+VALUES	(05, "Med D"),
+	(02, "Med B"),
+	(03, "Med C");
+INSERT INTO Prescribes (physicianID, patientID, medicationID, prescribedDate, dose)
+VALUES	(1, 2000, 05, "2021-02-12", "3/day"),
+		(2, 2001, 03, "2020-03-13", "2/day"),
+		(3, 2002, 02, "2019-05-14", "3/day"),
+		(4, 2003, 03, "2018-06-16", "2/day");
+	
+INSERT INTO Room (roomID, roomType)
+VALUES	(123, "Single"),
+		(124, "Double"),
+		(125, "Double"),
+		(220, "Single");
+       
+INSERT INTO Stay (stayID, patientID, roomID, startDate, endDate)
+VALUES	(600, 2000, 123, "2020-01-08", "2020-01-20"),
+		(601, 2001, 124, "2021-02-11", "2021-01-19"),
+		(602, 2002, 220, "2019-06-25", "2019-06-02"),
+		(603, 2003, 125, "2020-07-09", "2022-07-15");
+       
+INSERT INTO Undergoes(patientID,procedureID, stayID, processingDate,PhysicianID, nurseID)
+VALUES	(2000, 500, 600, "2022-01-10", 5, 1000),
+		(2001, 502, 601, "2022-01-10", 2, 1001),
+		(2002, 501, 602, "2022-01-10", 3, 1002),
+		(2003, 500, 603, "2022-01-10", 4, 1003);
+       
+INSERT INTO On_call_nurse (nurseID, startDate, endDate)
+VALUES	(1000, "2022-05-02", "2022-05-03"),
+		(1001, "2022-05-03", "2022-05-04"),
+		(1002, "2022-05-05", "2022-05-07"),
+		(1003, "2022-06-04", "2022-05-05");
+      
+INSERT INTO Appointment(appID, patientID,nurseID, physicianID, startDate, endDate)
+VALUES	(700, 2000, 1000, 2, "2023-06-12 12:00", "2023-06-12 12:45"),
+		(701, 2001, 1001, 3, "2023-07-13 13:00", "2023-07-13 13:45"),
+		(702, 2002, 1002, 4, "2023-06-14 14:00", "2023-06-14 14:45"),
+		(703, 2003, 1003, 5, "202-08-15 15:00", "202-08-15 15:45");
