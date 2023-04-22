@@ -1,4 +1,4 @@
-use project;
+use hospitalDB;
 INSERT INTO Physician (physicianID, name, position, ssn)
 VALUES	(1, "Abdi Brady", 'Intern', 58978956),
 		(2, "Brian Kaino", "Senior", 23456789),
@@ -56,7 +56,10 @@ INSERT INTO Stay (stayID, patientID, roomID, startDate, endDate)
 VALUES	(600, 2000, 123, "2020-01-08", "2020-01-20"),
 		(601, 2001, 124, "2021-02-11", "2021-01-19"),
 		(602, 2002, 220, "2019-06-25", "2019-06-02"),
-		(603, 2003, 125, "2020-07-09", "2022-07-15");
+		(603, 2003, 125, "2020-07-09", "2022-07-15"),
+        (605, 2002, 124, "2020-08-17", 	"2022-09-01"),
+        (606, 2003, 125, "2020-04-08",  "2020-04-16"),
+		(604, 2001, 124, "2021-02-11", "2021-02-19");
        
 INSERT INTO Undergoes(patientID,procedureID, stayID, processingDate,PhysicianID, nurseID)
 VALUES	(2000, 500, 600, "2022-01-10", 5, 1000),
