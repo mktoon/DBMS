@@ -1,83 +1,154 @@
-# DBMS
-Database management Systems
-This is a repository towork on my DBMS class project. Required to be a mySQL code. Here is a more clearer description of the DBMS project i am trying to work on it
-this is part 1 of the project.
+# Hospital Management System
 
-Scenario:
-"Las Palmas Medical Center" is a new hospital in Las Cruces, NM. They have hired you as a database administrator to create and manage their database. Assume that "Las Palmas Medical Center" has decided to have the following relational schema for their database:
+## Overview
 
-Physician (physicianID: integer, name: varchar(40), position: varchar(40), ssn: integer)
-Department (deptID: integer, name: varchar(40), headID: integer)
-Foreign key: headID references Physician(physicianID)
+This project is a **Hospital Management System** designed to manage various hospital operations, including physician and patient records, appointments, procedures, and medications. The system also tracks room assignments, nurse shifts, and medical procedures that patients undergo during their stay.
 
-AffiliatedWith (physicianID: integer, departmentID: integer)
-Foreign key: physicianID references Physician(physicianID)
-Foreign key: departmentID references Department(deptID)
+The system is built using a relational database with several tables that manage the relationships between physicians, patients, departments, procedures, nurses, and hospital stays.
 
-Procedure (procID: integer, name: varchar(40), cost: real)
+## Features
 
-Patient (patientID: integer, ssn: integer, name: varchar(40), address: varchar(100), dob: date, phone: varchar(16), insuranceNumber: integer, primaryPhysID: integer)
-Foreign key: primaryPhysID references Physician(physicianID)
+- **Physician Management**: Track information about physicians, including their department and position.
+- **Patient Management**: Record patient details such as name, contact info, primary physician, and more.
+- **Appointment Scheduling**: Schedule and manage appointments between patients and physicians.
+- **Medication and Prescription Management**: Assign medications to patients prescribed by physicians.
+- **Room Assignment**: Manage patient room assignments during their stay.
+- **Procedure Management**: Track medical procedures performed on patients.
+- **Nurse Scheduling**: Manage nurse shifts and on-call schedules.
 
-Nurse (nurseID: integer, name: varchar(40), position: varchar(40), ssn: integer)
+## Database Schema
 
-Medication (medID: integer, name: varchar(40))
+### Tables
 
-Prescribes (physicianID: integer, patientID: integer, medicationID: integer, prescribedDate: date, dose: varchar(40))
-Foreign key: physicianID references Physician(physicianID)
-Foreign key: patientID references Patient(patientID)
-Foreign key: medicationID references Medication(medID
+1. **Physician**
+   - `physicianID`: Unique identifier for each physician.
+   - `name`: Name of the physician.
+   - `position`: Job title or position (e.g., Intern, Senior, etc.).
+   - `ssn`: Social Security Number.
 
-Room (roomID: integer, roomType: varchar(40))
+2. **Department**
+   - `deptID`: Unique department ID.
+   - `name`: Department name (e.g., Surgery, Psychiatry, etc.).
+   - `headID`: Physician ID for the department head.
 
-Stay (stayID: integer, patientID: integer, roomID: integer, startDate: date, endDate: date)
-Foreign key: patientID references Patient(patientID)
-Foreign key: roomID references Room(roomID)
+3. **AffiliatedWith**
+   - `physicianID`: Foreign key from `Physician`.
+   - `departmentID`: Foreign key from `Department`.
 
-Undergoes (patientID: integer, procedureID: integer, stayID: integer, procDate: date, physicianID: integer, nurseID: integer)
-Foreign key: patientID references Patient(patientID)
-Foreign key: procedureID references Procedure(procID)
-Foreign key: stayID references Stay(stayID)
-Foreign key: physicianID references Physician(physicianID)
-Foreign key: nurseID references Nurse(nurseID)
+4. **Procedure**
+   - `procID`: Unique procedure ID.
+   - `name`: Name of the procedure (e.g., Proc A, Proc B).
+   - `cost`: Cost of the procedure.
 
-OnCall (nurseID: integer, startDate: date, endDate: date)
-Foreign key: nurseID references Nurse(nurseID)
+5. **Patient**
+   - `patientID`: Unique identifier for each patient.
+   - `ssn`: Patient's Social Security Number.
+   - `name`: Patient's full name.
+   - `address`: Patient's address.
+   - `dob`: Date of Birth.
+   - `phone`: Phone number.
+   - `insuranceNumber`: Insurance number.
+   - `primaryphysicianID`: Physician ID for the patient's primary care physician.
 
-Appointment (appID: integer, patientID: integer, nurseID: integer, physicianID: integer, startDateTime: datetime, endDateTime: datetime)
-Foreign key: patientID references Patient(patientID)
-Foreign key: nurseID references Nurse(nurseID)
-Foreign key: physicianID references Physician(physicianID)
- 
+6. **Nurse**
+   - `nurseID`: Unique nurse ID.
+   - `name`: Name of the nurse.
+   - `position`: Nurse's job position.
+   - `ssn`: Social Security Number.
 
-Note: The primary keys are shown with underlines.
+7. **Medication**
+   - `medID`: Unique medication ID.
+   - `name`: Medication name (e.g., Med D, Med B).
 
-Following are the value constrains for the tables:
+8. **Prescribes**
+   - `physicianID`: Foreign key from `Physician`.
+   - `patientID`: Foreign key from `Patient`.
+   - `medicationID`: Foreign key from `Medication`.
+   - `prescribedDate`: Date when the medication was prescribed.
+   - `dose`: Daily dose prescribed.
 
-Physicians can only have positions "Intern", "Surgeon", "Senior", "Chief of Medicine", "Resident", and "Psychiatrist".
-Departments name can only be "General Medicine", "Surgery", and "Psychiatry".
-Nurses can only have positions "Head Nurse" and "Nurse".
-Rooms type can only be "Single" and "Double".
- 
+9. **Room**
+   - `roomID`: Room ID (e.g., 123, 124).
+   - `roomType`: Type of room (e.g., Single, Double).
 
-Sample Data (please don't use in your submission!):
+10. **Stay**
+    - `stayID`: Unique ID for each patient stay.
+    - `patientID`: Foreign key from `Patient`.
+    - `roomID`: Foreign key from `Room`.
+    - `startDate`: Start date of the stay.
+    - `endDate`: End date of the stay.
 
-Physician (1, "John Doe", "Surgeon", 11111111)
-Department (1, "Surgery", 1)
-AffiliatedWith (1, 1)
-Procedure (1, "Proc A", 1500.0)
-Patient (1, 100001, "John Smith", "12 Foo Drive", "1980-01-01", "575-123-1234", 123454, 1)
-Nurse (1, "Jane Doe", "Head Nurse", 333333)
-Medication (1, "Med A")
-Prescribes (1, 1, 1, "2022-01-15", "5/day")
-Room (1, "Single")
-Stay (1, 1, 1, "2022-01-07", "2022-01-20")
-Undergoes (1, 1, 1, "2022-01-10", 1, 1)
-OnCall (1, "2022-01-01", "2022-02-01")
-Appointment (1, 1, 1, 1, "2021-12-05 14:00", "2021-12-05 15:00")
-Phase 1: Create a database using MySQL
-Objectives:
+11. **Undergoes**
+    - `patientID`: Foreign key from `Patient`.
+    - `procedureID`: Foreign key from `Procedure`.
+    - `stayID`: Foreign key from `Stay`.
+    - `processingDate`: Date when the procedure was performed.
+    - `physicianID`: Foreign key from `Physician`.
+    - `nurseID`: Foreign key from `Nurse`.
 
-Write DDL statements to create tables and constraints.
-Write DML statements to insert data into a database.
-Run SQL statements from a script file that includes a batch of SQL statements.
+12. **On_call_nurse**
+    - `nurseID`: Foreign key from `Nurse`.
+    - `startDate`: Start date of the on-call shift.
+    - `endDate`: End date of the on-call shift.
+
+13. **Appointment**
+    - `appID`: Unique appointment ID.
+    - `patientID`: Foreign key from `Patient`.
+    - `nurseID`: Foreign key from `Nurse`.
+    - `physicianID`: Foreign key from `Physician`.
+    - `startDate`: Appointment start time.
+    - `endDate`: Appointment end time.
+
+## Setup
+
+### Prerequisites
+
+1. **Database**: This project uses MySQL (or compatible databases). Make sure to install MySQL server and set up the database.
+2. **SQL Scripts**: Ensure you have the SQL script containing the `CREATE` table statements and the sample `INSERT` statements provided in the project.
+
+### Installation
+
+1. Clone this repository to your local machine:
+
+```bash
+git clone https://github.com/yourusername/hospital-management-system.git
+```
+
+2. Open the SQL script in a MySQL-compatible environment and execute it to create the tables and insert sample data.
+
+```sql
+-- Create the database and tables
+CREATE DATABASE hospitalDB;
+USE hospitalDB;
+
+-- Paste the schema and insert queries here
+```
+
+3. Verify the data was inserted successfully by running simple `SELECT` queries for each table, such as:
+
+```sql
+SELECT * FROM Physician;
+SELECT * FROM Patient;
+SELECT * FROM Department;
+```
+
+## Usage
+
+Once the database is set up, you can use it to:
+
+- Manage hospital records, including physicians, nurses, patients, and more.
+- Track patient stays, appointments, prescriptions, and procedures.
+- View and update physician and nurse details.
+- Schedule patient procedures and appointments.
+
+## Contributing
+
+1. Fork this repository.
+2. Create a new branch (`git checkout -b feature-name`).
+3. Make your changes.
+4. Commit your changes (`git commit -am 'Add new feature'`).
+5. Push to the branch (`git push origin feature-name`).
+6. Create a pull request.
+
+## Micah Too
+## Project
