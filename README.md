@@ -1,154 +1,45 @@
-# Hospital Management System
+# Hospital Management Database
 
-## Overview
+MySQL and Java coursework evolving into a hospital appointment management application.
 
-This project is a **Hospital Management System** designed to manage various hospital operations, including physician and patient records, appointments, procedures, and medications. The system also tracks room assignments, nurse shifts, and medical procedures that patients undergo during their stay.
+## Current milestone: Version 1 database
 
-The system is built using a relational database with several tables that manage the relationships between physicians, patients, departments, procedures, nurses, and hospital stays.
+The new [`database/v1`](database/v1/) baseline supports patient registration, a physician directory, appointment booking/rescheduling/cancellation, and reporting. It includes MySQL constraints, transactional scheduling procedures, restricted application permissions, fictional seed data, and integration tests.
 
-## Features
+The web interface and Spring Boot backend are the next milestones. See the [V1 database guide](database/v1/README.md) for the schema, runnable examples, design decisions, and transition from the original coursework.
 
-- **Physician Management**: Track information about physicians, including their department and position.
-- **Patient Management**: Record patient details such as name, contact info, primary physician, and more.
-- **Appointment Scheduling**: Schedule and manage appointments between patients and physicians.
-- **Medication and Prescription Management**: Assign medications to patients prescribed by physicians.
-- **Room Assignment**: Manage patient room assignments during their stay.
-- **Procedure Management**: Track medical procedures performed on patients.
-- **Nurse Scheduling**: Manage nurse shifts and on-call schedules.
+## Quick start
 
-## Database Schema
-
-### Tables
-
-1. **Physician**
-   - `physicianID`: Unique identifier for each physician.
-   - `name`: Name of the physician.
-   - `position`: Job title or position (e.g., Intern, Senior, etc.).
-   - `ssn`: Social Security Number.
-
-2. **Department**
-   - `deptID`: Unique department ID.
-   - `name`: Department name (e.g., Surgery, Psychiatry, etc.).
-   - `headID`: Physician ID for the department head.
-
-3. **AffiliatedWith**
-   - `physicianID`: Foreign key from `Physician`.
-   - `departmentID`: Foreign key from `Department`.
-
-4. **Procedure**
-   - `procID`: Unique procedure ID.
-   - `name`: Name of the procedure (e.g., Proc A, Proc B).
-   - `cost`: Cost of the procedure.
-
-5. **Patient**
-   - `patientID`: Unique identifier for each patient.
-   - `ssn`: Patient's Social Security Number.
-   - `name`: Patient's full name.
-   - `address`: Patient's address.
-   - `dob`: Date of Birth.
-   - `phone`: Phone number.
-   - `insuranceNumber`: Insurance number.
-   - `primaryphysicianID`: Physician ID for the patient's primary care physician.
-
-6. **Nurse**
-   - `nurseID`: Unique nurse ID.
-   - `name`: Name of the nurse.
-   - `position`: Nurse's job position.
-   - `ssn`: Social Security Number.
-
-7. **Medication**
-   - `medID`: Unique medication ID.
-   - `name`: Medication name (e.g., Med D, Med B).
-
-8. **Prescribes**
-   - `physicianID`: Foreign key from `Physician`.
-   - `patientID`: Foreign key from `Patient`.
-   - `medicationID`: Foreign key from `Medication`.
-   - `prescribedDate`: Date when the medication was prescribed.
-   - `dose`: Daily dose prescribed.
-
-9. **Room**
-   - `roomID`: Room ID (e.g., 123, 124).
-   - `roomType`: Type of room (e.g., Single, Double).
-
-10. **Stay**
-    - `stayID`: Unique ID for each patient stay.
-    - `patientID`: Foreign key from `Patient`.
-    - `roomID`: Foreign key from `Room`.
-    - `startDate`: Start date of the stay.
-    - `endDate`: End date of the stay.
-
-11. **Undergoes**
-    - `patientID`: Foreign key from `Patient`.
-    - `procedureID`: Foreign key from `Procedure`.
-    - `stayID`: Foreign key from `Stay`.
-    - `processingDate`: Date when the procedure was performed.
-    - `physicianID`: Foreign key from `Physician`.
-    - `nurseID`: Foreign key from `Nurse`.
-
-12. **On_call_nurse**
-    - `nurseID`: Foreign key from `Nurse`.
-    - `startDate`: Start date of the on-call shift.
-    - `endDate`: End date of the on-call shift.
-
-13. **Appointment**
-    - `appID`: Unique appointment ID.
-    - `patientID`: Foreign key from `Patient`.
-    - `nurseID`: Foreign key from `Nurse`.
-    - `physicianID`: Foreign key from `Physician`.
-    - `startDate`: Appointment start time.
-    - `endDate`: Appointment end time.
-
-## Setup
-
-### Prerequisites
-
-1. **Database**: This project uses MySQL (or compatible databases). Make sure to install MySQL server and set up the database.
-2. **SQL Scripts**: Ensure you have the SQL script containing the `CREATE` table statements and the sample `INSERT` statements provided in the project.
-
-### Installation
-
-1. Clone this repository to your local machine:
+Requires Git and Docker Compose with the `--wait` option.
 
 ```bash
-git clone https://github.com/yourusername/hospital-management-system.git
+git clone https://github.com/mktoon/DBMS.git
+cd DBMS
+cp .env.example .env
+# Edit .env and choose your own local database password.
+docker compose up -d --wait database
+docker compose exec -T database sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot' < database/v1/seed.sql
+docker compose exec -T database sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot' < database/v1/reports.sql
 ```
 
-2. Open the SQL script in a MySQL-compatible environment and execute it to create the tables and insert sample data.
+Initialization creates `hospital_v1` in a new persistent Docker volume. Run the optional seed once. The baseline intentionally fails if `hospital_v1` already exists; Compose runs initialization only for a new volume. `docker compose down` stops the database and retains the volume.
 
-```sql
--- Create the database and tables
-CREATE DATABASE hospitalDB;
-USE hospitalDB;
+## Original coursework
 
--- Paste the schema and insert queries here
-```
+The original `HospitalDB` files are still available at the repository root:
 
-3. Verify the data was inserted successfully by running simple `SELECT` queries for each table, such as:
+| File | Coursework content |
+| --- | --- |
+| `hospitalDB.sql`, `projectphaser1.sql` | Original hospital schema, including procedures, medications, admissions, and nursing entities |
+| `data entry` | Original sample inserts |
+| `queries phase2 .sql` | Original reporting exercises |
+| `phase3DB.java` | Java/JDBC console program |
+| `EER diagram.mwb` | Original MySQL Workbench model |
 
-```sql
-SELECT * FROM Physician;
-SELECT * FROM Patient;
-SELECT * FROM Department;
-```
+These files use the original table and column names. The original Java console is not compatible with the V1 schema. V1 uses a separate database and does not import or modify an existing `HospitalDB`.
 
-## Usage
+## Tests
 
-Once the database is set up, you can use it to:
+[Database integration workflow](.github/workflows/database.yml) runs the V1 baseline, fixtures, and tests against MySQL 8.4. Local instructions are in the [V1 guide](database/v1/README.md#integration-tests).
 
-- Manage hospital records, including physicians, nurses, patients, and more.
-- Track patient stays, appointments, prescriptions, and procedures.
-- View and update physician and nurse details.
-- Schedule patient procedures and appointments.
-
-## Contributing
-
-1. Fork this repository.
-2. Create a new branch (`git checkout -b feature-name`).
-3. Make your changes.
-4. Commit your changes (`git commit -am 'Add new feature'`).
-5. Push to the branch (`git push origin feature-name`).
-6. Create a pull request.
-
-## Micah Too
-## Project
+**Author:** Micah Too
