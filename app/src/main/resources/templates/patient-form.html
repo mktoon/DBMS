@@ -1,0 +1,14 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Patient details')}"></head>
+<body><aside th:replace="~{fragments :: sidebar('patients')}"></aside><div class="workspace"><header th:replace="~{fragments :: topbar}"></header><main>
+  <a class="back" th:href="@{/patients}">← Patient directory</a><div class="page-heading"><div><p class="eyebrow">PATIENT REGISTRATION</p><h1 th:text="${patientId == null ? 'Register a patient' : 'Edit patient details'}"></h1><p class="muted">Start with the essentials. Fields marked * are required.</p></div></div>
+  <form class="panel form-panel" method="post" th:object="${patientForm}" th:action="${patientId == null ? '/patients' : '/patients/' + patientId}">
+    <div class="notice error" th:if="${#fields.hasErrors('*')}" role="alert"><strong>Please check the following:</strong><ul><li th:each="e : ${#fields.errors('*')}" th:text="${e}"></li></ul></div>
+    <h2>Personal information</h2><div class="form-grid">
+      <div><label for="fullName">Full name *</label><input th:field="*{fullName}" required maxlength="150" autocomplete="name"></div>
+      <div><label for="dateOfBirth">Date of birth *</label><input type="date" th:field="*{dateOfBirth}" required min="1000-01-01" th:max="${#temporals.format(@clinicTime.todayUtc(), 'yyyy-MM-dd')}"></div>
+      <div><label for="phone">Phone</label><input type="tel" th:field="*{phone}" maxlength="32" autocomplete="tel"></div>
+      <div><label for="primaryPhysicianId">Primary physician</label><select th:field="*{primaryPhysicianId}"><option value="">Unassigned</option><option th:each="p : ${physicians}" th:value="${p.id}" th:text="${p.name + ' · ' + p.departmentName}"></option></select></div>
+      <div class="full-width"><label for="address">Address</label><textarea th:field="*{address}" rows="2" maxlength="255" autocomplete="street-address"></textarea></div>
+    </div><div class="form-actions"><button type="submit" th:text="${patientId == null ? 'Register patient' : 'Save changes'}"></button><a class="button secondary" th:href="${patientId == null ? '/patients' : '/patients/' + patientId}">Cancel</a></div>
+  </form>
+</main></div></body></html>

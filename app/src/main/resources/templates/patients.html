@@ -1,0 +1,11 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Patients')}"></head>
+<body><aside th:replace="~{fragments :: sidebar('patients')}"></aside><div class="workspace"><header th:replace="~{fragments :: topbar}"></header><main>
+  <div class="page-heading"><div><p class="eyebrow">PATIENT DIRECTORY</p><h1>People, at the center.</h1><p class="muted">Find a patient, update their details, or book their next visit.</p></div><a class="button" th:href="@{/patients/new}">+ Register patient</a></div>
+  <p class="notice" th:if="${param.booking}">Find the patient below, then choose Book to schedule their visit.</p>
+  <section class="panel"><form class="filters" method="get" th:action="@{/patients}"><div class="grow"><label for="q">Search by name or exact patient ID</label><input id="q" name="q" th:value="${q}" maxlength="100" placeholder="e.g. Jordan or 12"></div><button type="submit">Search</button><a class="button secondary" th:href="@{/patients}">Clear</a></form>
+    <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Date of birth</th><th>Phone</th><th>Primary physician</th><th>Actions</th></tr></thead><tbody>
+      <tr th:each="p : ${patients.items}"><td><a class="table-name" th:href="@{/patients/{id}(id=${p.id})}" th:text="${p.name}"></a><small th:text="${'Patient #' + p.id}"></small></td><td th:text="${#temporals.format(p.dateOfBirth, 'yyyy-MM-dd')}"></td><td th:text="${p.phone ?: '—'}"></td><td th:text="${p.primaryPhysicianName ?: 'Unassigned'}"></td><td><a th:href="@{/appointments/new(patientId=${p.id})}" th:aria-label="${'Book for ' + p.name}">Book →</a></td></tr>
+      <tr th:if="${#lists.isEmpty(patients.items)}"><td colspan="5" class="empty">No patients found. Try another search or register a patient.</td></tr>
+    </tbody></table></div><div class="pagination"><a th:if="${patients.number > 0}" th:href="@{/patients(q=${q},page=${patients.number - 1})}">← Previous</a><span th:text="${'Page ' + (patients.number + 1)}"></span><a th:if="${patients.hasNext}" th:href="@{/patients(q=${q},page=${patients.number + 1})}">Next →</a></div>
+  </section>
+</main></div></body></html>

@@ -1,0 +1,17 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Staff sign in')}"></head>
+<body class="login-page"><main class="login-shell">
+  <section class="login-intro"><div class="brand"><span class="brand-mark">+</span><span>CareDesk<small>HOSPITAL APPOINTMENTS</small></span></div>
+    <p class="eyebrow">A CLEARER DAY AT THE FRONT DESK</p><h1>Every appointment.<br>A little more organized.</h1><p>One place for patient registration, physician directories, and the daily schedule.</p>
+    <span class="login-note">Portfolio demonstration · Fictional records only</span>
+  </section>
+  <section class="login-card"><span class="eyebrow">STAFF WORKSPACE</span><h2>Welcome back</h2><p class="muted">Sign in to manage your clinic's day.</p>
+    <p th:if="${param.error}" class="notice error" role="alert">The username or password was not recognized.</p>
+    <p th:if="${param.logout}" class="notice success" role="status">You have signed out.</p>
+    <form method="post" th:action="@{/login}" class="stack">
+      <label for="username">Username</label><input id="username" name="username" autocomplete="username" required autofocus>
+      <label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Sign in →</button>
+    </form><p class="help">Use the staff account configured for this app.</p>
+  </section>
+</main></body></html>

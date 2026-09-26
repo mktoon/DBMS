@@ -1,0 +1,13 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Overview')}"></head>
+<body><aside th:replace="~{fragments :: sidebar('dashboard')}"></aside><div class="workspace"><header th:replace="~{fragments :: topbar}"></header><main>
+  <div class="page-heading"><div><p class="eyebrow">YOUR WORKSPACE AT A GLANCE</p><h1>Today's overview</h1><p class="muted" th:text="${#temporals.format(today, 'EEEE, MMMM d, yyyy')}"></p></div><a class="button" th:href="@{/appointments/new}">+ Book appointment</a></div>
+  <div th:replace="~{fragments :: notices}"></div>
+  <div class="stats">
+    <article class="stat"><span>Registered patients</span><strong th:text="${overview.patients}"></strong><a th:href="@{/patients}">View directory →</a></article>
+    <article class="stat"><span>Physicians</span><strong th:text="${overview.physicians}"></strong><a th:href="@{/physicians}">Explore care teams →</a></article>
+    <article class="stat accent"><span>Scheduled today</span><strong th:text="${overview.scheduled}"></strong><span class="stat-note">Appointments on the calendar</span></article>
+    <article class="stat"><span>Completed today</span><strong th:text="${overview.completed}"></strong><span class="stat-note" th:text="${overview.cancelled + ' cancelled today'}"></span></article>
+  </div>
+  <section class="panel"><div class="panel-heading"><div><h2>Today's schedule</h2><p class="muted">The first eight scheduled appointments, in time order.</p></div><a th:href="@{/appointments}">Full schedule →</a></div><div th:replace="~{fragments :: appointmentTable(${agenda})}"></div></section>
+  <div class="quick-grid"><a class="quick-card" th:href="@{/patients/new}"><span class="quick-symbol">+</span><div><h3>Register a patient</h3><p>Add contact details and a primary physician.</p></div><span>→</span></a><a class="quick-card" th:href="@{/reports}"><span class="quick-symbol">≡</span><div><h3>Review clinic activity</h3><p>See appointment totals by care team and status.</p></div><span>→</span></a></div>
+</main></div></body></html>

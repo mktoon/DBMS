@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title + ' · CareDesk'}">CareDesk</title><link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<aside class="sidebar" th:fragment="sidebar(active)">
+  <a class="brand" th:href="@{/}"><span class="brand-mark" aria-hidden="true">+</span><span>CareDesk<small>HOSPITAL APPOINTMENTS</small></span></a>
+  <p class="nav-label">WORKSPACE</p>
+  <nav aria-label="Main navigation">
+    <a th:href="@{/}" th:classappend="${active == 'dashboard' ? 'active' : ''}">Overview</a>
+    <a th:href="@{/patients}" th:classappend="${active == 'patients' ? 'active' : ''}">Patients</a>
+    <a th:href="@{/physicians}" th:classappend="${active == 'physicians' ? 'active' : ''}">Physicians</a>
+    <a th:href="@{/appointments}" th:classappend="${active == 'appointments' ? 'active' : ''}">Appointments</a>
+    <a th:href="@{/reports}" th:classappend="${active == 'reports' ? 'active' : ''}">Reports</a>
+  </nav>
+  <div class="sidebar-foot"><span class="demo-dot"></span> Portfolio demo<small>Use fictional patient details.</small></div>
+</aside>
+<header class="topbar" th:fragment="topbar">
+  <span>Hospital Appointment Manager</span>
+  <div class="topbar-actions"><span class="timezone" th:text="${@clinicTime.zoneName()}">UTC</span>
+    <form method="post" th:action="@{/logout}"><button class="text-button" type="submit">Sign out</button></form>
+  </div>
+</header>
+<div th:fragment="notices">
+  <p class="notice success" role="status" th:if="${success}" th:text="${success}"></p>
+  <p class="notice error" role="alert" th:if="${failure}" th:text="${failure}"></p>
+</div>
+<div class="table-wrap" th:fragment="appointmentTable(rows)">
+  <table><thead><tr><th>Patient</th><th>Physician</th><th>Start time</th><th>Status</th><th><span class="sr-only">Details</span></th></tr></thead>
+    <tbody><tr th:each="a : ${rows}">
+      <td><a class="table-name" th:href="@{/patients/{id}(id=${a.patientId})}" th:text="${a.patientName}"></a><small th:text="${'Patient #' + a.patientId}"></small></td>
+      <td><span th:text="${a.physicianName}"></span><small th:text="${a.departmentName}"></small></td>
+      <td th:text="${@clinicTime.display(a.startsAt)}"></td>
+      <td><span class="badge" th:classappend="${a.status}" th:text="${a.status}"></span></td>
+      <td><a th:href="@{/appointments/{id}(id=${a.id})}" th:aria-label="${'View appointment ' + a.id}">View →</a></td>
+    </tr><tr th:if="${#lists.isEmpty(rows)}"><td colspan="5" class="empty">No appointments to show.</td></tr></tbody>
+  </table>
+</div>
+</body></html>

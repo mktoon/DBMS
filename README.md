@@ -1,28 +1,42 @@
-# Hospital Management Database
+# CareDesk — Hospital Appointment Manager
 
-MySQL and Java coursework evolving into a hospital appointment management application.
+A staff-facing Java web application built from my hospital database coursework. **Spring Boot · Thymeleaf · JDBC · MySQL**
 
-## Current milestone: Version 1 database
+## Version 1
 
-The new [`database/v1`](database/v1/) baseline supports patient registration, a physician directory, appointment booking/rescheduling/cancellation, and reporting. It includes MySQL constraints, transactional scheduling procedures, restricted application permissions, fictional seed data, and integration tests.
+| Module | Working features |
+| --- | --- |
+| Patients | Register, search by name or ID, edit details, view appointment history |
+| Physicians | Browse the directory, filter by department, open a physician's daily schedule |
+| Appointments | Book, reschedule, cancel, and complete visits; prevent patient and physician overlaps |
+| Reports | Daily dashboard and date-range totals by department, physician, and status |
 
-The web interface and Spring Boot backend are the next milestones. See the [V1 database guide](database/v1/README.md) for the schema, runnable examples, design decisions, and transition from the original coursework.
+The app includes staff sign-in, protected forms, local-time display, a restricted database account, and a responsive web interface. This is a portfolio demo for fictional data. See the [application guide](app/README.md) for architecture and limitations, and the [database guide](database/v1/README.md) for SQL design.
 
 ## Quick start
 
-Requires Git and Docker Compose with the `--wait` option.
+Requires Git and Docker Compose with the `--wait` option. Java and Maven run inside the app's build container.
 
 ```bash
 git clone https://github.com/mktoon/DBMS.git
 cd DBMS
 cp .env.example .env
-# Edit .env and choose your own local database password.
+# Edit .env: set three different passwords and your clinic time zone.
 docker compose up -d --wait database
+docker compose exec -T database sh /opt/hospital/provision-app.sh
+# Optional: load fictional patients, physicians, and appointments ONCE.
 docker compose exec -T database sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot' < database/v1/seed.sql
-docker compose exec -T database sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot' < database/v1/reports.sql
+docker compose up -d --build app
+docker compose logs -f app
 ```
 
-Initialization creates `hospital_v1` in a new persistent Docker volume. Run the optional seed once. The baseline intentionally fails if `hospital_v1` already exists; Compose runs initialization only for a new volume. `docker compose down` stops the database and retains the volume.
+Open **http://localhost:8080** after the app starts. Sign in with `HOSPITAL_USERNAME` and `HOSPITAL_PASSWORD` from `.env`. Stop following logs with Ctrl+C; the containers keep running.
+
+Already ran the database milestone? Run `git pull`, add the new variables from `.env.example` to your existing `.env`, then run the database, provisioning, and app commands above. **Skip the seed if it was already loaded.** Existing V1 data stays in the same volume. No new schema migration is required.
+
+Initialization creates `hospital_v1` only in a new volume. `docker compose down` stops the app and database while retaining records. The provisioning script creates or updates the dedicated `hospital_app` database account to match `.env`.
+
+The first app build downloads dependencies and can take several minutes. If port 8080 is occupied, change only the host-side port in `compose.yaml`, for example `127.0.0.1:8081:8080`.
 
 ## Original coursework
 
@@ -40,6 +54,8 @@ These files use the original table and column names. The original Java console i
 
 ## Tests
 
-[Database integration workflow](.github/workflows/database.yml) runs the V1 baseline, fixtures, and tests against MySQL 8.4. Local instructions are in the [V1 guide](database/v1/README.md#integration-tests).
+- [Database integration](.github/workflows/database.yml): 18 tests against MySQL 8.4, including concurrent bookings.
+- [Application integration](.github/workflows/application.yml): Java date/time tests and HTTP tests of the packaged app against MySQL 8.4 using the restricted role.
+- Run instructions: [database tests](database/v1/README.md#integration-tests), [application tests](app/README.md#testing).
 
 **Author:** Micah Too
