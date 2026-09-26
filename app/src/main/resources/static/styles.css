@@ -331,6 +331,7 @@ main {
   font-size:.82rem
 }
 .table-wrap {
+  position:relative;
   overflow-x:auto
 }
 table {

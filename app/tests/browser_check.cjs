@@ -21,6 +21,11 @@ const assert = require('node:assert/strict');
     for (const [route, name] of [['/', 'overview'], ['/patients/new', 'registration'], ['/appointments', 'appointments'], ['/physicians', 'physicians'], ['/reports', 'reports']]) {
       const response = await page.goto(process.env.SMOKE_BASE + route);
       assert.equal(response.status(), 200, route);
+      if (route === '/appointments' || route === '/reports') {
+        for (const input of await page.locator('input[type="date"]').all()) {
+          assert.match(await input.inputValue(), /^\d{4}-\d{2}-\d{2}$/, route + ' must prefill a usable date');
+        }
+      }
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, route + ' overflows desktop viewport');
       await page.screenshot({path: path.join(output, name + '.png')});
     }
@@ -29,6 +34,10 @@ const assert = require('node:assert/strict');
     await page.getByLabel('Date of birth').fill('1992-05-11');
     await Promise.all([page.waitForURL(/\/patients\/\d+$/), page.getByRole('button', {name: 'Register patient'}).click()]);
     assert.equal(await page.getByRole('heading', {name: 'Browser Demo Patient', exact: true}).count(), 1);
+    const patientUrl = page.url();
+    await page.getByRole('link', {name: 'Edit details', exact: true}).click();
+    assert.equal(await page.getByLabel('Date of birth').inputValue(), '1992-05-11');
+    await page.goto(patientUrl);
     await page.getByRole('link', {name: '+ Book appointment', exact: true}).click();
     assert.equal(await page.getByRole('heading', {name: 'Book a visit', exact: true}).count(), 1);
     await page.screenshot({path: path.join(output, 'booking.png')});
