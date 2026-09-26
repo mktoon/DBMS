@@ -35,8 +35,14 @@ const assert = require('node:assert/strict');
     await page.setViewportSize({width: 390, height: 844});
     for (const [route, name] of [['/', 'overview-mobile'], ['/patients/new', 'registration-mobile'], ['/appointments', 'appointments-mobile']]) {
       await page.goto(process.env.SMOKE_BASE + route);
-      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, route + ' overflows mobile viewport');
       await page.screenshot({path: path.join(output, name + '.png'), fullPage: true});
+      const overflow = await page.evaluate(() => ({
+        width: innerWidth, documentWidth: document.documentElement.scrollWidth,
+        elements: [...document.querySelectorAll('body, .sidebar, .workspace, .topbar, main, .page-heading, .stats, .stat, .panel, .table-wrap, .quick-grid, .quick-card')]
+          .map(element => ({element: element.className || element.tagName, left: element.getBoundingClientRect().left, right: element.getBoundingClientRect().right}))
+          .filter(element => element.right > innerWidth || element.left < 0)
+      }));
+      assert.equal(overflow.documentWidth > overflow.width, false, route + ' overflows mobile viewport: ' + JSON.stringify(overflow));
     }
     assert.deepEqual(errors, []);
     console.log('Browser checks passed: sign-in, registration, booking navigation, and desktop/mobile layouts.');
