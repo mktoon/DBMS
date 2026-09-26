@@ -4,16 +4,35 @@ services:
     command: ["--default-time-zone=+00:00"]
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Copy .env.example to .env and set a password}
+      MYSQL_APP_PASSWORD: ${MYSQL_APP_PASSWORD:?Set the application database password in .env}
     ports:
       - "127.0.0.1:3307:3306"
     volumes:
       - hospital_mysql_data:/var/lib/mysql
       - ./database/v1/migrations:/docker-entrypoint-initdb.d:ro
+      - ./database/v1/provision-app.sh:/opt/hospital/provision-app.sh:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
       interval: 5s
       timeout: 5s
       retries: 30
+
+  app:
+    build: ./app
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      APP_BIND_ADDRESS: 0.0.0.0
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_USERNAME: hospital_app
+      MYSQL_APP_PASSWORD: ${MYSQL_APP_PASSWORD:?Set the application database password in .env}
+      HOSPITAL_USERNAME: ${HOSPITAL_USERNAME:-staff}
+      HOSPITAL_PASSWORD: ${HOSPITAL_PASSWORD:?Set the staff login password in .env}
+      HOSPITAL_TIME_ZONE: ${HOSPITAL_TIME_ZONE:-UTC}
+    ports:
+      - "127.0.0.1:8080:8080"
 
   database-test:
     profiles: ["test"]

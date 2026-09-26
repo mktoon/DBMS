@@ -1,0 +1,16 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Schedule a visit')}"></head>
+<body><aside th:replace="~{fragments :: sidebar('appointments')}"></aside><div class="workspace"><header th:replace="~{fragments :: topbar}"></header><main>
+  <a class="back" th:href="@{/appointments}">← Appointment schedule</a><div class="page-heading"><div><p class="eyebrow">APPOINTMENT DETAILS</p><h1 th:text="${appointmentId == null ? 'Book a visit' : 'Reschedule a visit'}"></h1><p class="muted">All times on this screen use <strong th:text="${@clinicTime.zoneName()}"></strong>.</p></div></div>
+  <form class="panel form-panel" method="post" th:object="${appointmentForm}" th:action="${appointmentId == null ? '/appointments' : '/appointments/' + appointmentId + '/reschedule'}">
+    <div class="notice error" th:if="${#fields.hasErrors('*')}" role="alert"><strong>Please check the following:</strong><ul><li th:each="e : ${#fields.errors('*')}" th:text="${e}"></li></ul></div>
+    <div class="patient-strip" th:if="${patient}"><span class="avatar" th:text="${#strings.substring(patient.name,0,1)}"></span><div><strong th:text="${patient.name}"></strong><small th:text="${'Patient #' + patient.id + ' · Born ' + patient.dateOfBirth}"></small></div><input type="hidden" th:field="*{patientId}"></div>
+    <p th:unless="${patient}"><a th:href="@{/patients(booking='')}">Choose a patient from the directory</a></p>
+    <div class="form-grid"><div class="full-width"><label for="physicianId">Physician *</label><select th:field="*{physicianId}" required th:disabled="${appointmentId != null}"><option value="">Choose a physician</option><option th:each="p : ${physicians}" th:value="${p.id}" th:text="${p.name + ' · ' + p.departmentName}"></option></select><input th:if="${appointmentId != null}" type="hidden" name="physicianId" th:value="*{physicianId}"></div>
+      <div><label for="startsAt">Start *</label><input type="datetime-local" th:field="*{startsAt}" required step="60"></div>
+      <div><label for="endsAt">End *</label><input type="datetime-local" th:field="*{endsAt}" required step="60"></div>
+      <div class="full-width"><label for="visitReason">Visit reason</label><textarea th:field="*{visitReason}" rows="3" maxlength="255" th:readonly="${appointmentId != null}"></textarea></div>
+    </div><p class="help">Patient and physician schedules are checked when you save. Back-to-back visits are allowed.</p>
+    <p class="help" th:if="${appointmentId != null}">To change the patient or physician, cancel this appointment and book a new one.</p>
+    <div class="form-actions"><button type="submit" th:text="${appointmentId == null ? 'Book appointment' : 'Save new times'}"></button><a class="button secondary" th:href="${appointmentId == null ? '/patients' : '/appointments/' + appointmentId}">Cancel</a></div>
+  </form>
+</main></div></body></html>

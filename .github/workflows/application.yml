@@ -1,0 +1,61 @@
+name: Application integration
+
+on:
+  push:
+    paths: ["app/**", "database/**", "compose.yaml", ".github/workflows/application.yml"]
+  pull_request:
+    paths: ["app/**", "database/**", "compose.yaml", ".github/workflows/application.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  application:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ci_application_tests_only
+          MYSQL_ROOT_HOST: "%"
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: app/pom.xml
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build and test date handling
+        run: mvn -B -ntp -f app/pom.xml verify
+      - run: python -m pip install -r database/v1/tests/requirements.txt
+      - name: Prepare browser checks
+        run: |
+          npm install --prefix "$RUNNER_TEMP/hospital-browser" --no-save --package-lock=false playwright@1.58.2
+          echo "PLAYWRIGHT_MODULE_PATH=$RUNNER_TEMP/hospital-browser/node_modules/playwright" >> "$GITHUB_ENV"
+          echo "CHROME_PATH=$(command -v google-chrome)" >> "$GITHUB_ENV"
+      - name: Exercise the web app against MySQL with restricted credentials
+        env:
+          MYSQL_ROOT_PASSWORD: ci_application_tests_only
+          DB_SSL_MODE: DISABLED
+          DB_ALLOW_PUBLIC_KEY_RETRIEVAL: "true"
+          BROWSER_CHECK_SCRIPT: app/tests/browser_check.cjs
+        run: python app/tests/smoke_test.py
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-test-reports
+          path: |
+            app/target/surefire-reports/
+            app/target/smoke-server.log
+            app/target/browser/

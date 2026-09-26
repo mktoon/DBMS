@@ -1,0 +1,9 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Appointments')}"></head>
+<body><aside th:replace="~{fragments :: sidebar('appointments')}"></aside><div class="workspace"><header th:replace="~{fragments :: topbar}"></header><main>
+  <div class="page-heading"><div><p class="eyebrow">DAILY SCHEDULE</p><h1>Make room for care.</h1><p class="muted">Book, reschedule, and follow each visit through the day.</p></div><a class="button" th:href="@{/appointments/new}">+ Book appointment</a></div>
+  <section class="panel"><form class="filters" method="get" th:action="@{/appointments}">
+    <div><label for="date">Date</label><input type="date" name="date" id="date" th:value="${date}" required></div>
+    <div><label for="physician">Physician</label><select id="physician" name="physician"><option value="">All physicians</option><option th:each="p : ${physicians}" th:value="${p.id}" th:text="${p.name}" th:selected="${selectedPhysician != null and selectedPhysician == p.id}"></option></select></div>
+    <div><label for="status">Status</label><select id="status" name="status"><option th:each="s : ${ {'all','scheduled','completed','cancelled'} }" th:value="${s}" th:text="${#strings.capitalize(s)}" th:selected="${status == s}"></option></select></div><button type="submit">Apply filters</button>
+  </form><div th:replace="~{fragments :: appointmentTable(${appointments.items})}"></div><div class="pagination"><a th:if="${appointments.number > 0}" th:href="@{/appointments(date=${date},status=${status},physician=${selectedPhysician},page=${appointments.number - 1})}">← Previous</a><span th:text="${'Page ' + (appointments.number + 1)}"></span><a th:if="${appointments.hasNext}" th:href="@{/appointments(date=${date},status=${status},physician=${selectedPhysician},page=${appointments.number + 1})}">Next →</a></div></section>
+</main></div></body></html>

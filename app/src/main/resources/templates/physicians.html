@@ -1,0 +1,7 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head th:replace="~{fragments :: head('Physicians')}"></head>
+<body><aside th:replace="~{fragments :: sidebar('physicians')}"></aside><div class="workspace"><header th:replace="~{fragments :: topbar}"></header><main>
+  <div class="page-heading"><div><p class="eyebrow">PHYSICIAN DIRECTORY</p><h1>Meet the care team.</h1><p class="muted">Find physicians and browse their departments.</p></div></div>
+  <form class="filters standalone" method="get" th:action="@{/physicians}"><div><label for="department">Department</label><select name="department" id="department"><option value="">All departments</option><option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}" th:selected="${selectedDepartment != null and selectedDepartment == d.id}"></option></select></div><button type="submit">Apply filter</button></form>
+  <div class="physician-grid"><article class="panel physician-card" th:each="p : ${physicians}"><span class="avatar" th:text="${#strings.substring(p.name,0,1)}"></span><span class="department-tag" th:text="${p.departmentName}"></span><h2 th:text="${p.name}"></h2><p class="muted" th:text="${p.position}"></p><small th:text="${'Physician #' + p.id}"></small><a th:href="@{/appointments(physician=${p.id})}">View today's schedule →</a></article></div>
+  <div class="panel empty" th:if="${#lists.isEmpty(physicians)}">No physicians in this department.</div>
+</main></div></body></html>

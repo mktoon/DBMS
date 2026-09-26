@@ -103,7 +103,7 @@ GRANT 'hospital_v1_app' TO 'hospital_app'@'localhost';
 SET DEFAULT ROLE 'hospital_v1_app' TO 'hospital_app'@'localhost';
 ```
 
-The example host is for an application on the same MySQL host. Containerized deployments need a matching host grant. Do not grant `hospital_v1.*` privileges in addition to this role. Application login, staff roles, password handling, and a record-change audit trail will be implemented in later application work; this database role is service access, not user authentication.
+The example host is for an application on the same MySQL host. Containerized deployments need a matching host grant. The [web app quick start](../../README.md#quick-start) uses `provision-app.sh` to create the dedicated account for Compose, including on an existing V1 volume. Do not grant `hospital_v1.*` privileges in addition to this role. The web app has a single configured staff login; multiple staff roles and a record-change audit trail remain future work. This database role is service access, not user authentication.
 
 ## Integration tests
 
@@ -142,6 +142,6 @@ GitHub Actions runs the same suite on a fresh MySQL 8.4 service. It checks:
 | SSN / insurance fields | Omitted from the V1 registration form and schema |
 | Procedures, medications, rooms, stays, nurses | Remain in original coursework; outside the four-module V1 scope |
 
-This baseline is not an automatic conversion of an existing database. Before importing coursework records, map identifiers, choose each physician's department, validate birth dates and appointment intervals, assign appointment statuses, and resolve overlaps. The original Java program and Workbench diagram describe the old schema; the next milestone will add the V1 Java application.
+This baseline is not an automatic conversion of an existing database. Before importing coursework records, map identifiers, choose each physician's department, validate birth dates and appointment intervals, assign appointment statuses, and resolve overlaps. The original Java program and Workbench diagram describe the old schema; the [V1 Java web application](../../app/README.md) uses this new database.
 
 Implementation references: [MySQL locking reads](https://dev.mysql.com/doc/refman/8.4/en/innodb-locking-reads.html) and [CHECK constraints](https://dev.mysql.com/doc/refman/8.4/en/create-table-check-constraints.html).
